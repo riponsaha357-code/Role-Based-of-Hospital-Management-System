@@ -43,6 +43,7 @@ Make sure you have the following installed:
 ## 📸 Screenshots
 
 ### 🏠 Home Page
+![Home](screenshots/home.png)
 
 
 ### 🔐 Login Page
