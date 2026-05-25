@@ -16,14 +16,27 @@ This system helps in managing patient records, appointments, and hospital staff 
 - 🗄️ Secure Database Integration
 - ⚡ Fast and Efficient Data Handling
 
----
 
 ## 🛠️ Tech Stack
 - **Frontend:** HTML, CSS, JavaScript  
 - **Backend:** (Write your backend here → Flask / Django / Node.js)  
 - **Database:** (MySQL / MongoDB)
 
----
+
+## 📦 Installation & Setup
+
+This project uses Node.js dependencies, but the `node_modules` folder is not included in this repository to keep the project lightweight.
+
+Follow the steps below to install required dependencies:
+
+### 🔹 Prerequisites
+Make sure you have the following installed:
+- Node.js
+- npm (Node Package Manager)
+
+### 🔹 Steps to Install
+
+
 
 ## 📸 Screenshots
 
