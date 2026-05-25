@@ -5,7 +5,8 @@ The Role-Based Hospital Management System is a web-based application designed to
 
 This system helps in managing patient records, appointments, and hospital staff through a centralized and user-friendly platform.
 
----
+
+
 
 ## 🚀 Key Features
 - 🔐 Role-Based Authentication (Admin / Doctor / Patient)
@@ -15,6 +16,7 @@ This system helps in managing patient records, appointments, and hospital staff 
 - 📊 Admin Panel for Managing System Data
 - 🗄️ Secure Database Integration
 - ⚡ Fast and Efficient Data Handling
+
 
 
 ## 🛠️ Tech Stack
