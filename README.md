@@ -36,9 +36,6 @@ Make sure you have the following installed:
 - Node.js
 - npm (Node Package Manager)
 
-### 🔹 Steps to Install
-
-
 
 ## 📸 Screenshots
 
@@ -60,7 +57,7 @@ Make sure you have the following installed:
 <img width="1884" height="790" alt="image" src="https://github.com/user-attachments/assets/1f1479a9-1dec-4b4c-b694-94cac9eb1636" />
 <img width="1404" height="654" alt="image" src="https://github.com/user-attachments/assets/8859f0b4-0464-4535-9872-9f2c85681b22" />
 
-
+### 🔐 Doctor Login Page
 
 ## ▶️ How to Run
 1. Clone the repository:
