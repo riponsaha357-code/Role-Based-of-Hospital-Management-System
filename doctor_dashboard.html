@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Doctor Dashboard</title>
+
+    <style>
+        /* 🔥 GLOBAL */
+        
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: url("https://images.unsplash.com/photo-1579684385127-1ef15d508118");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+        }
+        /* 🔥 SIDEBAR */
+        
+        .sidebar {
+            position: fixed;
+            width: 230px;
+            height: 100%;
+            background: rgba(30, 45, 60, 0.95);
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .sidebar h2 {
+            margin-bottom: 30px;
+        }
+        
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+        
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            padding-left: 15px;
+        }
+        /* 🔥 MAIN */
+        
+        .main {
+            margin-left: 250px;
+            padding: 40px;
+            min-height: 100vh;
+        }
+        /* 🔥 CARDS */
+        
+        .cards {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            padding: 25px;
+            width: 240px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            transition: 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px) scale(1.03);
+        }
+        /* 🔥 FORM */
+        
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 6px;
+            border: none;
+            outline: none;
+        }
+        /* 🔥 BUTTON */
+        
+        button {
+            padding: 10px 15px;
+            margin-top: 10px;
+            background: #00bcd4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        button:hover {
+            background: #0097a7;
+        }
+        /* 🔥 TABLE */
+        
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: center;
+        }
+    </style>
+
+    <script>
+        const API = "https://unpreventible-ernest-contributively.ngrok-free.dev";
+
+        let currentDoctor = "";
+        window.onload = function() {
+
+            currentDoctor = localStorage.getItem("doctorName");
+
+            if (!currentDoctor) {
+                alert("❌ Doctor not logged in");
+                window.location.href = "login.html";
+                return;
+            }
+            // ✅ DEBUG LINE (PASTE HERE)
+            console.log("Logged Doctor:", currentDoctor);
+
+            document.getElementById("doctorName").innerText = currentDoctor;
+
+            loadDashboard();
+        }
+
+        function showPage(page) {
+
+            ["dashboard", "patients", "appointments"].forEach(id => {
+                document.getElementById(id).style.display = "none";
+            });
+
+            document.getElementById(page).style.display = "block";
+
+            if (page === "appointments") loadAppointments();
+            if (page === "patients") loadPatients();
+        }
+
+        function isFuture(dateStr) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const appDate = new Date(dateStr);
+            return appDate >= today;
+        }
+
+        // ✅ DASHBOARD
+        async function loadDashboard() {
+
+            const res = await fetch(API + "/appointments/doctor/" + encodeURIComponent(currentDoctor));
+            const data = await res.json();
+
+            const valid = data.filter(a => isFuture(a.date));
+
+            document.getElementById("todayAppointments").innerText = valid.length;
+
+            const patients = [...new Set(valid.map(a => a.patient))];
+            document.getElementById("totalPatients").innerText = patients.length;
+        }
+
+        // ✅ APPOINTMENTS
+        async function loadAppointments() {
+
+            const res = await fetch(API + "/appointments/doctor/" + encodeURIComponent(currentDoctor));
+            const data = await res.json();
+
+            var table = document.getElementById("appointmentTable");
+            table.innerHTML = "";
+
+            const valid = data.filter(a => isFuture(a.date));
+
+            if (valid.length === 0) {
+                table.innerHTML = "<tr><td colspan='5'>No Upcoming Appointments</td></tr>";
+                return;
+            }
+
+            valid.forEach((a) => {
+                        table.innerHTML += `
+                <tr>
+                    <td>${a.patient}</td>
+                    <td>${a.date}</td>
+                    <td>${a.time || "-"}</td>
+                    <td>${a.status}</td>
+                    <td>
+                        ${a.status === "Pending"
+                        ? `<button onclick="confirmAppointment('${a._id}')">Confirm</button>`
+                        : "✔ Confirmed"}
+                    </td>
+                </tr>`;
+            });
+        }
+
+        // ✅ CONFIRM
+        async function confirmAppointment(id) {
+
+            await fetch(API + "/appointments/confirm/" + id, {
+                method: "PUT"
+            });
+
+            alert("✅ Appointment Confirmed");
+
+            loadAppointments();
+            loadDashboard();
+        }
+
+        // ✅ PATIENTS
+        async function loadPatients() {
+
+            const res = await fetch(API + "/appointments/doctor/" + encodeURIComponent(currentDoctor));
+            const data = await res.json();
+
+            var table = document.getElementById("patientTable");
+            table.innerHTML = "";
+
+            const valid = data.filter(a => isFuture(a.date));
+
+            const uniquePatients = [...new Map(valid.map(p => [p.patient, p])).values()];
+
+            if (uniquePatients.length === 0) {
+                table.innerHTML = "<tr><td colspan='3'>No Patients Found</td></tr>";
+                return;
+            }
+
+            uniquePatients.forEach(a => {
+                table.innerHTML += `
+                <tr>
+                    <td>${a.patient}</td>
+                    <td>${a.age || "-"}</td>
+                    <td>${a.disease || "-"}</td>
+                </tr>`;
+            });
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h2>Doctor Panel</h2>
+
+        <a href="#" onclick="showPage('dashboard')">Dashboard</a>
+        <a href="#" onclick="showPage('patients')">My Patients</a>
+        <a href="#" onclick="showPage('appointments')">Appointments</a>
+        <a href="dashboard.html">Logout</a>
+    </div>
+
+    <div class="main">
+
+        <p style="position:absolute; top:20px; right:40px;">
+            👤 <b id="doctorName"></b>
+        </p>
+
+        <!-- DASHBOARD -->
+        <div id="dashboard">
+            <h1>Doctor Dashboard</h1>
+
+            <div class="cards">
+                <div class="card">
+                    <h3>Today's Appointments</h3>
+                    <p id="todayAppointments">0</p>
+                </div>
+
+                <div class="card">
+                    <h3>Total Patients</h3>
+                    <p id="totalPatients">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PATIENTS -->
+        <div id="patients" style="display:none;">
+            <h1>My Patients</h1>
+
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Disease</th>
+                </tr>
+
+                <tbody id="patientTable"></tbody>
+            </table>
+        </div>
+
+        <!-- APPOINTMENTS -->
+        <div id="appointments" style="display:none;">
+            <h1>Appointments</h1>
+
+            <table>
+                <tr>
+                    <th>Patient</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+                <tbody id="appointmentTable"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

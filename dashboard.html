@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            /* 🔥 Professional Background */
+            background: url("https://images.unsplash.com/photo-1579684385127-1ef15d508118") no-repeat center center/cover;
+        }
+        /* 🔥 SIDEBAR */
+        
+        .sidebar {
+            position: fixed;
+            width: 230px;
+            height: 100%;
+            background: rgba(47, 64, 83, 0.9);
+            padding: 20px;
+            color: white;
+        }
+        
+        .sidebar h2 {
+            margin-bottom: 30px;
+        }
+        /* 🔥 MAIN (Dark Overlay) */
+        
+        .main {
+            margin-left: 250px;
+            padding: 40px;
+            min-height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+        }
+        
+        h1 {
+            color: white;
+        }
+        /* 🔓 LOGOUT BUTTON FIX */
+        
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 9999;
+            /* 🔥 IMPORTANT */
+        }
+        
+        .logout-btn:hover {
+            background: #cc0000;
+        }
+        /* 🔥 CARD CONTAINER */
+        
+        .card-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        /* 🔥 GLASS CARD */
+        
+        .card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            width: 250px;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+        
+        .card a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .card p {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ddd;
+        }
+    </style>
+
+    <script>
+        // 🔐 PROTECT PAGE
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            alert("Access denied! Please login first.");
+            window.location.href = "index.html";
+        }
+
+        // 🔐 VERIFY TOKEN WITH SERVER
+        function verifyUser() {
+            fetch("https://localhost:3000/appointments", {
+                    headers: {
+                        "authorization": token
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert("Session expired! Please login again.");
+                        localStorage.removeItem("token");
+                        window.location.href = "index.html";
+                    } else {
+                        console.log("Authorized User ✅");
+                    }
+                })
+                .catch(() => {
+                    alert("Server error!");
+                });
+        }
+
+        // 🔐 SEND TOKEN IN REQUEST
+        function loadAppointments() {
+            fetch("http://localhost:3000/appointments", {
+                    headers: {
+                        "authorization": token
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Appointments:", data); // You can show in table later
+                });
+        }
+
+        // 🔓 LOGOUT FUNCTION
+        function logout() {
+            localStorage.removeItem("token");
+            alert("Logged out!");
+            window.location.href = "index.html";
+        }
+
+        // AUTO LOAD DATA
+        window.onload = loadAppointments;
+    </script>
+
+</head>
+
+<body>
+
+    <!-- 🔓 LOGOUT BUTTON -->
+    <button class="logout-btn" onclick="logout()">Logout</button>
+
+    <!-- 🔥 SIDEBAR -->
+    <div class="sidebar">
+        <h2>Hospital Panel</h2>
+    </div>
+
+    <!-- 🔥 MAIN -->
+    <div class="main">
+
+        <h1>Hospital Dashboard</h1>
+
+        <!-- 🔥 CARDS -->
+        <div class="card-container">
+
+            <!-- Patient -->
+            <div class="card">
+                <a href="patient_login.html">Patient Login</a>
+                <p>Book appointments and view records</p>
+            </div>
+
+            <!-- Doctor -->
+            <div class="card">
+                <a href="doctor_login.html">Doctor Login</a>
+                <p>Manage patient appointments</p>
+            </div>
+
+            <!-- Admin -->
+            <div class="card">
+                <a href="admin_login.html">Admin Login</a>
+                <p>Control system and manage users</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

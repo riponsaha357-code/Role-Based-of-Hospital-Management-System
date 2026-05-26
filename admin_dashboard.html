@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Admin Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            /* 🌟 LIGHT HOSPITAL WALLPAPER */
+            background: url("https://images.unsplash.com/photo-1586773860418-d37222d8fce3");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+        /* 🔥 SIDEBAR */
+        
+        .sidebar {
+            position: fixed;
+            width: 230px;
+            height: 100%;
+            background: rgba(47, 64, 83, 0.9);
+            padding: 20px;
+            color: white;
+            backdrop-filter: blur(10px);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .sidebar h2 {
+            margin-bottom: 30px;
+        }
+        
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+        
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            padding-left: 15px;
+        }
+        /* 🔥 MAIN */
+        
+        .main {
+            margin-left: 250px;
+            padding: 40px;
+            color: #1f2d3d;
+            /* dark text */
+        }
+        /* 🔥 CARDS */
+        
+        .cards {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            width: 260px;
+            border-radius: 15px;
+            color: #1f2d3d;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px) scale(1.03);
+        }
+        /* 🔥 TABLE */
+        
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+            width: 100%;
+            color: #1f2d3d;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        table th {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        table th,
+        table td {
+            padding: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        /* 🔥 INPUTS */
+        
+        input {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+        /* 🔥 BUTTON */
+        
+        button {
+            padding: 10px 15px;
+            background: #00bcd4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        button:hover {
+            background: #0097a7;
+        }
+        /* 🔥 STATUS COLORS */
+        
+        .low {
+            background-color: rgba(255, 0, 0, 0.2);
+        }
+        
+        .expiring {
+            background-color: rgba(255, 193, 7, 0.3);
+        }
+        
+        .expired {
+            background-color: rgba(255, 0, 0, 0.4);
+        }
+    </style>
+
+    <script>
+        const API = "http://localhost:3000";
+
+        let currentPage = "dashboard";
+
+        function showPage(page) {
+            currentPage = page;
+            ["dashboard", "doctors", "appointments", "inventory", "billing"].forEach(id => {
+                document.getElementById(id).style.display = "none";
+            });
+
+            document.getElementById(page).style.display = "block";
+
+            if (page === "dashboard") loadDashboard();
+            if (page === "appointments") loadAppointments();
+            if (page === "inventory") loadInventory();
+        }
+
+        async function loadDashboard() {
+            const token = localStorage.getItem("token");
+
+            const res = await fetch(API + "/appointments", {
+                headers: {
+                    "Authorization": token
+                }
+            });
+            const data = await res.json();
+
+            document.getElementById("totalAppointments").innerText = data.length;
+
+            const uniquePatients = [...new Set(data.map(a => a.patient))];
+            document.getElementById("totalPatients").innerText = uniquePatients.length;
+        }
+
+        async function loadAppointments() {
+            const token = localStorage.getItem("token");
+
+            const res = await fetch(API + "/appointments", {
+                headers: {
+                    "Authorization": token
+                }
+            });
+            const data = await res.json();
+
+            const table = document.getElementById("adminTable");
+            table.innerHTML = "";
+
+            if (!data || data.length === 0) {
+                table.innerHTML = "<tr><td colspan='4'>No Appointments</td></tr>";
+                return;
+            }
+
+            data.forEach(a => {
+                table.innerHTML += `
+                <tr>
+                    <td>${a.patient}</td>
+                    <td>${a.doctor}</td>
+                    <td>${a.date}</td>
+                    <td>${a.time}</td>
+                </tr>`;
+            });
+        }
+
+        async function loadInventory() {
+            try {
+
+                // ✅ GET TOKEN
+                const token = localStorage.getItem("token");
+
+                const res = await fetch(API + "/inventory", {
+                    headers: {
+                        "Authorization": token
+                    }
+                });
+
+                const data = await res.json();
+
+                const table = document.getElementById("inventoryTable");
+                table.innerHTML = "";
+
+                if (!data || data.length === 0) {
+                    table.innerHTML = "<tr><td colspan='7'>No Medicines Found</td></tr>";
+                    return;
+                }
+
+                const today = new Date();
+
+                data.forEach(m => {
+
+                    const expDate = new Date(m.expiry);
+                    const diff = (expDate - today) / (1000 * 60 * 60 * 24);
+
+                    let status = "";
+                    let rowClass = "";
+
+                    if (diff < 0) {
+                        status = "❌ Expired";
+                        rowClass = "expired";
+                    } else if (diff <= 7) {
+                        status = "⚠ Expiring Soon";
+                        rowClass = "expiring";
+                    } else {
+                        status = "✅ Safe";
+                    }
+
+                    if (m.stock <= m.minStock) {
+                        rowClass = "low";
+                        status = "⚠ Low Stock";
+                    }
+
+                    table.innerHTML += `
+            <tr class="${rowClass}">
+                <td>${m.name}</td>
+                <td>${m.stock}</td>
+                <td>${m.minStock}</td>
+                <td>${m.expiry}</td>
+                <td>₹${m.price}</td>
+                <td>${status}</td>
+                <td>
+                    <input type="number" id="s${m.id}" placeholder="Stock">
+                    <button onclick="updateStock('${m.id}')">Update</button>
+                </td>
+            </tr>`;
+                });
+
+                loadAlerts();
+
+            } catch (err) {
+                console.error("Error loading inventory:", err);
+                alert("Failed to load inventory");
+            }
+        }
+
+        // ✅ BILLING FUNCTION 
+        async function generateBill() {
+
+            let items = document.getElementById("billItems").value
+                .split(",")
+                .map(i => i.trim());
+
+            if (items.length === 0 || items[0] === "") {
+                alert("⚠ Enter medicine names!");
+                return;
+            }
+
+            const token = localStorage.getItem("token");
+
+            try {
+                const res = await fetch(API + "/billing", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": token
+                    },
+                    body: JSON.stringify({
+                        items
+                    })
+                });
+
+                const data = await res.json();
+
+                console.log("BILL:", data);
+
+                // 🚨 ✅ CHECK SERVER ERROR
+                if (!res.ok || data.error) {
+                    alert("❌ " + (data.error || "Billing failed"));
+                    return;
+                }
+
+                if (data.notFound && data.notFound.length) {
+                    alert("⚠ Not found: " + data.notFound.join(", "));
+                }
+
+                if (data.outOfStock && data.outOfStock.length) {
+                    alert("❌ Out of stock: " + data.outOfStock.join(", "));
+                }
+
+                document.getElementById("billTotal").innerText = "₹ " + data.total;
+
+                if (data.total === 0) {
+                    alert("⚠ No valid medicines found!");
+                } else {
+                    alert("✅ Bill Generated: ₹ " + data.total);
+                }
+
+                loadInventory();
+
+            } catch (err) {
+                console.error("Billing Error:", err);
+                alert("❌ Server error! Please try again.");
+            }
+        }
+
+        // ✅ FIXED ADD MEDICINE
+        async function addMedicine() {
+
+            const name = document.getElementById("name").value.trim();
+            const stock = document.getElementById("stock").value;
+            const minStock = document.getElementById("minStock").value;
+            const expiry = document.getElementById("expiry").value;
+            const price = document.getElementById("price").value;
+            const controlled = document.getElementById("controlled").checked;
+
+            if (!name || !stock || !minStock || !expiry || !price) {
+                alert("⚠ Please fill all fields!");
+                return;
+            }
+
+            const token = localStorage.getItem("token");
+
+            await fetch(API + "/inventory/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": token
+                },
+                body: JSON.stringify({
+                    name,
+                    stock,
+                    minStock,
+                    expiry,
+                    price,
+                    controlled
+                })
+            });
+
+            alert("✅ Medicine Added");
+
+            // CLEAR FORM
+            document.getElementById("name").value = "";
+            document.getElementById("stock").value = "";
+            document.getElementById("minStock").value = "";
+            document.getElementById("expiry").value = "";
+            document.getElementById("price").value = "";
+            document.getElementById("controlled").checked = false;
+
+            // 🔥 IMPORTANT FIX
+            showPage("inventory"); // 👉 ensure inventory is visible
+            loadInventory(); // 👉 reload table
+        }
+
+        async function updateStock(id) {
+
+            const stock = document.getElementById("s" + id).value;
+
+            if (!stock) {
+                alert("Enter stock value!");
+                return;
+            }
+
+            await fetch(API + "/inventory/update/" + id, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    stock
+                })
+            });
+
+            alert("✅ Stock Updated");
+            loadInventory();
+        }
+
+        async function loadAlerts() {
+
+            const low = await fetch(API + "/inventory/low").then(r => r.json());
+            const exp = await fetch(API + "/inventory/expiry").then(r => r.json());
+
+            if (low.length) {
+                console.log("LOW STOCK:", low.map(m => m.name).join(", "));
+            }
+
+            if (exp.length) {
+                console.log("EXPIRY SOON:", exp.map(m => m.name).join(", "));
+            }
+        }
+
+        window.onload = function() {
+            showPage("dashboard"); // ✅ start clean
+            loadDashboard();
+        };
+
+        setInterval(() => {
+            if (currentPage === "dashboard") loadDashboard();
+            if (currentPage === "appointments") loadAppointments();
+            if (currentPage === "inventory") loadInventory();
+        }, 5000);
+    </script>
+
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h2>Hospital</h2>
+
+        <a href="#" onclick="showPage('dashboard')">Dashboard</a>
+        <a href="#" onclick="showPage('doctors')">Doctors</a>
+        <a href="#" onclick="showPage('appointments')">Appointments</a>
+        <a href="#" onclick="showPage('inventory')">Inventory & Pharmacy</a>
+        <a href="#" onclick="showPage('billing')">Billing</a>
+        <a href="dashboard.html" onclick="logout()">Logout</a>
+    </div>
+
+    <div class="main">
+
+        <div id="dashboard">
+            <h1>Admin Dashboard</h1>
+
+            <div class="cards">
+                <div class="card">
+                    <h3>Total Doctors</h3>
+                    <p>12</p>
+                </div>
+
+                <div class="card">
+                    <h3>Appointments</h3>
+                    <p id="totalAppointments">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctors -->
+        <div id="doctors" style="display:none;">
+            <h1>Doctors</h1>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Specialization</th>
+                </tr>
+                <tr>
+                    <td>Dr. Smith</td>
+                    <td>Cardiologist</td>
+                </tr>
+                <tr>
+                    <td>Dr. John</td>
+                    <td>Dentist</td>
+                </tr>
+                <tr>
+                    <td>Dr. David</td>
+                    <td>Neurologist</td>
+                </tr>
+                <tr>
+                    <td>Dr. Alex</td>
+                    <td>Dermatologist</td>
+                </tr>
+                <tr>
+                    <td>Dr. Priya</td>
+                    <td>Ophthalmologist</td>
+                </tr>
+                <tr>
+                    <td>Dr. Kumar</td>
+                    <td>Orthopedic</td>
+                </tr>
+                <tr>
+                    <td>Dr. Khan</td>
+                    <td>Pulmonologist</td>
+                </tr>
+                <tr>
+                    <td>Dr. Mehta</td>
+                    <td>Nephrologist</td>
+                </tr>
+                <tr>
+                    <td>Dr. Roy</td>
+                    <td>Hepatologist</td>
+                </tr>
+                <tr>
+                    <td>Dr. Das</td>
+                    <td>Gastroenterologist</td>
+                </tr>
+                <tr>
+                    <td>Dr. Sharma</td>
+                    <td>General Physician</td>
+                </tr>
+                <tr>
+                    <td>Dr. Bose</td>
+                    <td>Surgeon</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Appointments -->
+        <div id="appointments" style="display:none;">
+            <h1>Appointments</h1>
+            <table>
+                <tr>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                </tr>
+                <tbody id="adminTable"></tbody>
+            </table>
+        </div>
+
+        <!-- ✅ INVENTORY -->
+        <div id="inventory" style="display:none;">
+            <h1>Inventory & Pharmacy</h1>
+
+            <h3>Add Medicine</h3>
+
+            <input id="name" placeholder="Name">
+            <input id="stock" placeholder="Stock">
+            <input id="minStock" placeholder="Min Stock">
+            <input id="expiry" type="date">
+            <input id="price" placeholder="Price">
+            <label>Controlled <input type="checkbox" id="controlled"></label>
+
+            <button onclick="addMedicine()">Add Medicine</button>
+
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Stock</th>
+                    <th>Min</th>
+                    <th>Expiry</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Update</th>
+                </tr>
+                <tbody id="inventoryTable"></tbody>
+            </table>
+        </div>
+
+        <!-- 💰 BILLING -->
+        <div id="billing" style="display:none;">
+            <h1>Billing System</h1>
+
+            <input id="billItems" placeholder="Paracetamol, Crocin">
+
+            <br><br>
+
+            <button onclick="generateBill()">Generate Bill</button>
+
+            <h2>Total: <span id="billTotal">₹ 0</span></h2>
+        </div>
+
+
+    </div>
+
+</body>
+
+</html>

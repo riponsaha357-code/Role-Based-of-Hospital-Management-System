@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Doctor Login</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            /* 🔥 PROFESSIONAL HOSPITAL WALLPAPER */
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 40, 60, 0.7)), url('https://images.unsplash.com/photo-1582750433449-648ed127bb54');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+        }
+        /* 🔥 GLASS LOGIN BOX */
+        
+        .login-box {
+            width: 350px;
+            margin: 120px auto;
+            padding: 30px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+        
+        h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        label {
+            font-weight: bold;
+        }
+        
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 6px;
+            outline: none;
+        }
+        /* 🔥 BUTTON */
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: #00bcd4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        button:hover {
+            background: #0097a7;
+        }
+    </style>
+
+    <script>
+        const doctors = {
+            "Dr. Smith (Cardiologist)": {
+                email: "smith1@gmail.com",
+                password: "1234"
+            },
+            "Dr. John (Dentist)": {
+                email: "john2@gmail.com",
+                password: "1234"
+            },
+            "Dr. David (Neurologist)": {
+                email: "david3@gmail.com",
+                password: "1234"
+            },
+            "Dr. Alex (Dermatologist)": {
+                email: "alex4@gmail.com",
+                password: "1234"
+            },
+            "Dr. Priya (Ophthalmologist)": {
+                email: "priya5@gmail.com",
+                password: "1234"
+            },
+            "Dr. Kumar (Orthopedic)": {
+                email: "kumar6@gmail.com",
+                password: "1234"
+            },
+            "Dr. Khan (Pulmonologist)": {
+                email: "khan7@gmail.com",
+                password: "1234"
+            },
+            "Dr. Mehta (Nephrologist)": {
+                email: "mehta8@gmail.com",
+                password: "1234"
+            },
+            "Dr. Roy (Hepatologist)": {
+                email: "roy9@gmail.com",
+                password: "1234"
+            },
+            "Dr. Das (Gastroenterologist)": {
+                email: "das10@gmail.com",
+                password: "1234"
+            },
+            "Dr. Sharma (General Physician)": {
+                email: "sharma11@gmail.com",
+                password: "1234"
+            }
+        };
+
+        function doctorLogin() {
+
+            var name = document.getElementById("name").value;
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+
+            if (
+                doctors[name] &&
+                doctors[name].email === email &&
+                doctors[name].password === password
+            ) {
+                localStorage.setItem("doctorName", name);
+
+                localStorage.setItem("token", "doctor-token");
+
+                window.location.href = "doctor_dashboard.html";
+            } else {
+                alert("Invalid Doctor Details");
+            }
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <div class="login-box">
+
+        <h2>Doctor Login</h2>
+
+        <label>Doctor Name</label>
+        <select id="name">
+            <option>Dr. Smith (Cardiologist)</option>
+            <option>Dr. John (Dentist)</option>
+            <option>Dr. David (Neurologist)</option>
+            <option>Dr. Alex (Dermatologist)</option>
+            <option>Dr. Priya (Ophthalmologist)</option>
+            <option>Dr. Kumar (Orthopedic)</option>
+            <option>Dr. Khan (Pulmonologist)</option>
+            <option>Dr. Mehta (Nephrologist)</option>
+            <option>Dr. Roy (Hepatologist)</option>
+            <option>Dr. Das (Gastroenterologist)</option>
+            <option>Dr. Sharma (General Physician)</option>
+        </select>
+
+        <label>Email</label>
+        <input type="email" id="email" placeholder="Enter Email">
+
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Enter Password">
+
+        <button onclick="doctorLogin()">Login</button>
+
+    </div>
+
+</body>
+
+</html>
