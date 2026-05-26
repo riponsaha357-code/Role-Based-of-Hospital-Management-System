@@ -62,5 +62,9 @@ Make sure you have the following installed:
 ### 🔐 Admin Login Page
 <img width="645" height="495" alt="image" src="https://github.com/user-attachments/assets/e7d66cac-824c-426c-ac27-266cb04b40d5" />
 
-## ▶️ How to Run
-1. Clone the repository:
+## ▶️ How to Run in cmd Step by step 
+## 📸 Screenshots
+<img width="1472" height="479" alt="image" src="https://github.com/user-attachments/assets/eee48a4c-bd60-4d15-a3f6-e1a761c779fd" />
+<img width="1278" height="79" alt="image" src="https://github.com/user-attachments/assets/dbfae666-4f75-4782-bf8a-85240266e628" />
+<img width="1454" height="445" alt="image" src="https://github.com/user-attachments/assets/b3b3b0ad-744f-45fe-b989-b2237c21beca" />
+
