@@ -1,0 +1,56 @@
+[
+  {
+    "id": "1776166693686",
+    "name": "Peracetamol",
+    "stock": 31,
+    "minStock": 15,
+    "expiry": "2026-04-17",
+    "price": 8,
+    "controlled": true
+  },
+  {
+    "id": "1776180330596",
+    "name": "Inculin",
+    "stock": 30,
+    "minStock": 10,
+    "expiry": "2026-04-13",
+    "price": 80,
+    "controlled": true
+  },
+  {
+    "id": "1776182373487",
+    "name": "Cyradi",
+    "stock": 32,
+    "minStock": 14,
+    "expiry": "2026-05-01",
+    "price": 7,
+    "controlled": true
+  },
+  {
+    "id": "1776182373506",
+    "name": "Cyradi",
+    "stock": 70,
+    "minStock": 14,
+    "expiry": "2026-05-01",
+    "price": 7,
+    "controlled": true
+  },
+  {
+    "id": "1776315925962",
+    "name": "Nici Plus",
+    "stock": 30,
+    "minStock": 10,
+    "expiry": "2026-04-24",
+    "price": 10,
+    "controlled": true
+  },
+  {
+    "id": "1777127559404",
+    "name": "Zero Dol-P",
+    "stock": 49,
+    "minStock": 10,
+    "expiry": "2026-05-07",
+    "price": 9,
+    "controlled": true
+  }
+]
