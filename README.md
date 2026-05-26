@@ -7,7 +7,6 @@ This system helps in managing patient records, appointments, and hospital staff 
 
 
 
-
 ## 🚀 Key Features
 - 🔐 Role-Based Authentication (Admin / Doctor / Patient)
 - 🏥 Patient Registration and Record Management
