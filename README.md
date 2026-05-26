@@ -58,6 +58,10 @@ Make sure you have the following installed:
 <img width="1404" height="654" alt="image" src="https://github.com/user-attachments/assets/8859f0b4-0464-4535-9872-9f2c85681b22" />
 
 ### 🔐 Doctor Login Page
+<img width="902" height="596" alt="image" src="https://github.com/user-attachments/assets/524cc35c-abdf-423b-b178-8940aa586bfe" />
+
+### 🔐 Admin Login Page
+<img width="645" height="495" alt="image" src="https://github.com/user-attachments/assets/e7d66cac-824c-426c-ac27-266cb04b40d5" />
 
 ## ▶️ How to Run
 1. Clone the repository:
