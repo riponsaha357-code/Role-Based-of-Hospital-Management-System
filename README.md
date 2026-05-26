@@ -43,6 +43,8 @@ Make sure you have the following installed:
 ## 📸 Screenshots
 
 ### 🏠 Home Page
+<img width="1907" height="833" alt="image" src="https://github.com/user-attachments/assets/5e8d42cd-2b77-4d69-ae4d-e9cdb296942c" />
+
 
 
 ### 🔐 Login Page
